@@ -4,6 +4,7 @@ import time
 import json
 import math
 import ssl
+import html
 import urllib.request
 import urllib.error
 from datetime import datetime, timezone
@@ -42,12 +43,13 @@ def fetch_json(url):
     with urllib.request.urlopen(req, timeout=12, context=ssl_ctx) as resp:
         return json.loads(resp.read().decode("utf-8"))
 
-def send_telegram(message):
+def send_telegram(message_html):
+    # Use HTML formatting to avoid Markdown entity parse errors
     api_url = f"https://api.telegram.org/bot{BOT_TOKEN}/sendMessage"
     payload = json.dumps({
         "chat_id": CHAT_ID,
-        "text": message,
-        "parse_mode": "Markdown",
+        "text": message_html,
+        "parse_mode": "HTML",
         "disable_web_page_preview": True
     }).encode("utf-8")
     
@@ -72,7 +74,6 @@ def load_state():
         except Exception:
             pass
             
-    # Default initial state
     return {
         "virtual_balance": 1000.0,
         "slot_size": DEFAULT_SLOT_SIZE,
@@ -120,21 +121,12 @@ def calculate_rsi(closes, period=14):
     return 100.0 - (100.0 / (1.0 + rs))
 
 # --- TRADING LOGIC ---
-def get_current_price(symbol):
-    try:
-        data = fetch_json(f"{MEXC_BASE_URL}/ticker/price?symbol={symbol}")
-        return float(data["price"])
-    except Exception as e:
-        print(f"Error fetching price for {symbol}: {e}")
-        return None
-
 def get_klines_data(symbol, interval="5m", limit=35):
     try:
         url = f"{MEXC_BASE_URL}/klines?symbol={symbol}&interval={interval}&limit={limit}"
         data = fetch_json(url)
         # Kline format: [openTime, open, high, low, close, volume, ...]
-        closes = [float(k[4]) for k in data]
-        return closes
+        return data
     except Exception as e:
         print(f"Error fetching klines for {symbol}: {e}")
         return None
@@ -146,9 +138,14 @@ def process_trades(state):
 
     # 1. CHECK OPEN POSITIONS (TAKE PROFIT / STOP LOSS)
     for symbol, trade in list(open_trades.items()):
-        current_price = get_current_price(symbol)
-        if not current_price:
+        klines = get_klines_data(symbol, interval="5m", limit=5)
+        if not klines:
             continue
+
+        latest_kline = klines[-1]
+        high_price = float(latest_kline[2])
+        low_price = float(latest_kline[3])
+        current_price = float(latest_kline[4])
 
         entry_price = trade["entry_price"]
         target_price = trade["target_price"]
@@ -156,12 +153,12 @@ def process_trades(state):
         amount = trade["amount"]
         invested = trade["invested_usdt"]
 
-        # Calculate current PnL
-        pnl_pct = ((current_price - entry_price) / entry_price) * 100
-        pnl_usdt = (current_price - entry_price) * amount
+        # Check if candle High reached Take Profit (+0.60% or higher)
+        if high_price >= target_price:
+            exit_price = max(current_price, target_price)
+            pnl_pct = ((exit_price - entry_price) / entry_price) * 100
+            pnl_usdt = (exit_price - entry_price) * amount
 
-        # Condition A: Take Profit Hit (+0.60% or higher)
-        if current_price >= target_price:
             state["virtual_balance"] += (invested + pnl_usdt)
             state["stats"]["total_trades"] += 1
             state["stats"]["wins"] += 1
@@ -170,20 +167,24 @@ def process_trades(state):
             win_rate = (state["stats"]["wins"] / state["stats"]["total_trades"]) * 100
 
             msg = (
-                f"🎯 *PROFIT TAKEN! ({symbol})*\n\n"
-                f"🟢 *Entry Price:* `${entry_price:.5f}`\n"
-                f"🔴 *Exit Price:* `${current_price:.5f}`\n"
-                f"💰 *Net Profit:* `+{pnl_pct:.2f}%` (+${pnl_usdt:.2f} USDT)\n"
-                f"🏦 *New Virtual Balance:* `${state['virtual_balance']:.2f} USDT`\n"
-                f"🏆 *Overall Win Rate:* `{win_rate:.1f}%` ({state['stats']['wins']}/{state['stats']['total_trades']})\n"
-                f"⏱️ _{now_str}_"
+                f"🎯 <b>PROFIT TAKEN! ({html.escape(symbol)})</b>\n\n"
+                f"🟢 <b>Entry Price:</b> <code>${entry_price:.5f}</code>\n"
+                f"🔴 <b>Exit Price:</b> <code>${exit_price:.5f}</code>\n"
+                f"💰 <b>Net Profit:</b> <code>+{pnl_pct:.2f}%</code> (+${pnl_usdt:.2f} USDT)\n"
+                f"🏦 <b>New Virtual Balance:</b> <code>${state['virtual_balance']:.2f} USDT</code>\n"
+                f"🏆 <b>Overall Win Rate:</b> <code>{win_rate:.1f}%</code> ({state['stats']['wins']}/{state['stats']['total_trades']})\n"
+                f"⏱️ <i>{now_str}</i>"
             )
-            print(f"✅ TP HIT: {symbol} at {current_price}")
+            print(f"✅ TP HIT: {symbol} at {exit_price}")
             send_telegram(msg)
             closed_this_round.append(symbol)
 
-        # Condition B: Stop Loss Hit (-2.50%)
-        elif current_price <= stop_price:
+        # Check if candle Low breached Stop Loss (-2.50%)
+        elif low_price <= stop_price:
+            exit_price = min(current_price, stop_price)
+            pnl_pct = ((exit_price - entry_price) / entry_price) * 100
+            pnl_usdt = (exit_price - entry_price) * amount
+
             state["virtual_balance"] += (invested + pnl_usdt)
             state["stats"]["total_trades"] += 1
             state["stats"]["losses"] += 1
@@ -192,17 +193,19 @@ def process_trades(state):
             win_rate = (state["stats"]["wins"] / state["stats"]["total_trades"]) * 100
 
             msg = (
-                f"🛑 *STOP LOSS EXECUTED ({symbol})*\n\n"
-                f"🟢 *Entry Price:* `${entry_price:.5f}`\n"
-                f"🔴 *Exit Price:* `${current_price:.5f}`\n"
-                f"📉 *Loss:* `{pnl_pct:.2f}%` (-${abs(pnl_usdt):.2f} USDT)\n"
-                f"🏦 *New Virtual Balance:* `${state['virtual_balance']:.2f} USDT`\n"
-                f"🏆 *Overall Win Rate:* `{win_rate:.1f}%` ({state['stats']['wins']}/{state['stats']['total_trades']})\n"
-                f"⏱️ _{now_str}_"
+                f"🛑 <b>STOP LOSS EXECUTED ({html.escape(symbol)})</b>\n\n"
+                f"🟢 <b>Entry Price:</b> <code>${entry_price:.5f}</code>\n"
+                f"🔴 <b>Exit Price:</b> <code>${exit_price:.5f}</code>\n"
+                f"📉 <b>Loss:</b> <code>{pnl_pct:.2f}%</code> (-${abs(pnl_usdt):.2f} USDT)\n"
+                f"🏦 <b>New Virtual Balance:</b> <code>${state['virtual_balance']:.2f} USDT</code>\n"
+                f"🏆 <b>Overall Win Rate:</b> <code>{win_rate:.1f}%</code> ({state['stats']['wins']}/{state['stats']['total_trades']})\n"
+                f"⏱️ <i>{now_str}</i>"
             )
-            print(f"⚠️ SL HIT: {symbol} at {current_price}")
+            print(f"⚠️ SL HIT: {symbol} at {exit_price}")
             send_telegram(msg)
             closed_this_round.append(symbol)
+
+        time.sleep(0.15)  # Rate limit protection
 
     for s in closed_this_round:
         del open_trades[s]
@@ -218,10 +221,11 @@ def process_trades(state):
             if available_slots <= 0:
                 break
 
-            closes = get_klines_data(symbol, interval="5m", limit=30)
-            if not closes or len(closes) < 22:
+            klines = get_klines_data(symbol, interval="5m", limit=30)
+            if not klines or len(klines) < 22:
                 continue
 
+            closes = [float(k[4]) for k in klines]
             current_price = closes[-1]
             upper_bb, sma, lower_bb = calculate_bollinger_bands(closes, period=20, std_dev_mult=2.0)
             rsi = calculate_rsi(closes, period=14)
@@ -251,17 +255,19 @@ def process_trades(state):
                 available_slots -= 1
 
                 msg = (
-                    f"🟢 *NEW SPOT SCALP ENTERED! ({symbol})*\n\n"
-                    f"💵 *Entry Price:* `${current_price:.5f}`\n"
-                    f"🎯 *Take Profit (+0.6%):* `${target_price:.5f}`\n"
-                    f"🛑 *Stop Loss (-2.5%):* `${stop_loss_price:.5f}`\n"
-                    f"📊 *Indicator:* `RSI = {rsi:.1f}` (Oversold Dip)\n"
-                    f"💼 *Slot Size:* `${slot_size:.2f} USDT`\n"
-                    f"🏦 *Available Cash:* `${state['virtual_balance']:.2f} USDT`\n"
-                    f"⏱️ _{now_str}_"
+                    f"🟢 <b>NEW SPOT SCALP ENTERED! ({html.escape(symbol)})</b>\n\n"
+                    f"💵 <b>Entry Price:</b> <code>${current_price:.5f}</code>\n"
+                    f"🎯 <b>Take Profit (+0.6%):</b> <code>${target_price:.5f}</code>\n"
+                    f"🛑 <b>Stop Loss (-2.5%):</b> <code>${stop_loss_price:.5f}</code>\n"
+                    f"📊 <b>Indicator:</b> <code>RSI = {rsi:.1f}</code> (Oversold Dip)\n"
+                    f"💼 <b>Slot Size:</b> <code>${slot_size:.2f} USDT</code>\n"
+                    f"🏦 <b>Available Cash:</b> <code>${state['virtual_balance']:.2f} USDT</code>\n"
+                    f"⏱️ <i>{now_str}</i>"
                 )
                 print(f"🚀 ENTERED: {symbol} at {current_price}")
                 send_telegram(msg)
+
+            time.sleep(0.15)  # Rate limit protection
 
     save_state(state)
     print(f"ℹ️ Scan complete. Active open trades: {len(open_trades)}/{state['max_slots']}")
@@ -274,5 +280,4 @@ if __name__ == "__main__":
             process_trades(state)
             time.sleep(60)
     else:
-        # Single execution mode for GitHub Actions
         process_trades(state)
