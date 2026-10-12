@@ -39,6 +39,14 @@
     "total_trades": 3,
     "wins": 1,
     "losses": 2,
-    "total_profit_usdt": -9.197636537847348
-  }
+    "total_profit_usdt": -9.197636537847348,
+    "fees_usdt": 0.0
+  },
+  "cooldowns": {},
+  "day": {
+    "date": "2026-10-12",
+    "start_equity": 990.8023634621527,
+    "pnl": 0.0
+  },
+  "last_report_date": "2026-10-12"
 }
