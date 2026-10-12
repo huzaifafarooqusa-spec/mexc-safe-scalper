@@ -1,8 +1,39 @@
 {
-  "virtual_balance": 1000.0,
+  "virtual_balance": 400.0,
   "slot_size": 200.0,
   "max_slots": 3,
-  "open_trades": {},
+  "open_trades": {
+    "SEIUSDT": {
+      "symbol": "SEIUSDT",
+      "entry_price": 0.06775,
+      "amount": 2952.029520295203,
+      "invested_usdt": 200.0,
+      "target_price": 0.06815650000000001,
+      "stop_loss_price": 0.06605625,
+      "entry_rsi": 31.0,
+      "entry_time": "2026-10-12 14:18:46 UTC"
+    },
+    "DOTUSDT": {
+      "symbol": "DOTUSDT",
+      "entry_price": 1.2524,
+      "amount": 159.69338869370807,
+      "invested_usdt": 200.0,
+      "target_price": 1.2599144,
+      "stop_loss_price": 1.22109,
+      "entry_rsi": 24.18,
+      "entry_time": "2026-10-12 14:18:46 UTC"
+    },
+    "WLDUSDT": {
+      "symbol": "WLDUSDT",
+      "entry_price": 0.5247,
+      "amount": 381.17019249094716,
+      "invested_usdt": 200.0,
+      "target_price": 0.5278482000000001,
+      "stop_loss_price": 0.5115825,
+      "entry_rsi": 23.62,
+      "entry_time": "2026-10-12 14:18:46 UTC"
+    }
+  },
   "closed_trades": [],
   "stats": {
     "total_trades": 0,
