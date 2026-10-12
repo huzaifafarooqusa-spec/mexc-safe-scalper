@@ -1,0 +1,13 @@
+{
+  "virtual_balance": 1000.0,
+  "slot_size": 200.0,
+  "max_slots": 3,
+  "open_trades": {},
+  "closed_trades": [],
+  "stats": {
+    "total_trades": 0,
+    "wins": 0,
+    "losses": 0,
+    "total_profit_usdt": 0.0
+  }
+}
