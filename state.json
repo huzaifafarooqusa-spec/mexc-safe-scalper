@@ -1,5 +1,5 @@
 {
-  "virtual_balance": 400.0,
+  "virtual_balance": 594.6023634621527,
   "slot_size": 200.0,
   "max_slots": 3,
   "open_trades": {
@@ -11,16 +11,6 @@
       "target_price": 0.06815650000000001,
       "stop_loss_price": 0.06605625,
       "entry_rsi": 31.0,
-      "entry_time": "2026-10-12 14:18:46 UTC"
-    },
-    "DOTUSDT": {
-      "symbol": "DOTUSDT",
-      "entry_price": 1.2524,
-      "amount": 159.69338869370807,
-      "invested_usdt": 200.0,
-      "target_price": 1.2599144,
-      "stop_loss_price": 1.22109,
-      "entry_rsi": 24.18,
       "entry_time": "2026-10-12 14:18:46 UTC"
     },
     "WLDUSDT": {
@@ -36,9 +26,9 @@
   },
   "closed_trades": [],
   "stats": {
-    "total_trades": 0,
+    "total_trades": 1,
     "wins": 0,
-    "losses": 0,
-    "total_profit_usdt": 0.0
+    "losses": 1,
+    "total_profit_usdt": -5.397636537847341
   }
 }
