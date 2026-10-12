@@ -2,7 +2,7 @@ name: MEXC Spot Scalper Monitor
 
 on:
   schedule:
-    # Runs every 5 minutes
+    # Every 5 minutes (GitHub may delay or skip scheduled runs under load)
     - cron: '*/5 * * * *'
   workflow_dispatch: # Allows manual trigger from GitHub UI
 
@@ -16,27 +16,49 @@ concurrency:
 jobs:
   scalp-scan:
     runs-on: ubuntu-latest
+    timeout-minutes: 10
 
     steps:
-      - name: Checkout repository
+      - name: Checkout code
         uses: actions/checkout@v4
+
+      # State lives on its own branch so bot commits never touch main
+      - name: Checkout state branch
+        uses: actions/checkout@v4
+        with:
+          ref: state
+          path: .state
 
       - name: Set up Python
         uses: actions/setup-python@v5
         with:
-          python-version: '3.11'
+          python-version: '3.12'
 
       - name: Run MEXC Scalper
         env:
           BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
           CHAT_ID: ${{ secrets.CHAT_ID }}
+          STATE_FILE: .state/state.json
         run: python scalper.py
 
-      - name: Commit and push state updates
+      - name: Persist state
+        if: always()
+        working-directory: .state
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
           git add state.json
-          git commit -m "Auto-update scalper state" || echo "No state changes to commit"
-          git pull --rebase origin main || true
-          git push origin main || echo "No changes to push"
+          if git diff --cached --quiet; then echo "No state changes"; exit 0; fi
+          git commit -m "Update scalper state"
+          git push origin HEAD:state
+
+      - name: Alert on failure
+        if: failure()
+        env:
+          BOT_TOKEN: ${{ secrets.BOT_TOKEN }}
+          CHAT_ID: ${{ secrets.CHAT_ID }}
+          RUN_URL: ${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}
+        run: |
+          curl -sS -X POST "https://api.telegram.org/bot${BOT_TOKEN}/sendMessage" \
+            --data-urlencode "chat_id=${CHAT_ID}" \
+            --data-urlencode "text=❌ MEXC scalper run failed: ${RUN_URL}"
