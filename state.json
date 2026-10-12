@@ -1,0 +1,44 @@
+{
+  "virtual_balance": 990.8023634621527,
+  "slot_size": 200.0,
+  "max_slots": 3,
+  "open_trades": {},
+  "closed_trades": [
+    {
+      "symbol": "SEIUSDT",
+      "entry_price": 0.06775,
+      "amount": 2952.029520295203,
+      "invested_usdt": 200.0,
+      "target_price": 0.06815650000000001,
+      "stop_loss_price": 0.06605625,
+      "entry_rsi": 31.0,
+      "entry_time": "2026-10-12 14:18:46 UTC",
+      "exit_price": 0.06605625,
+      "exit_time": "2026-10-12 20:34:06 UTC",
+      "result": "SL",
+      "pnl_pct": -2.5,
+      "pnl_usdt": -5.0
+    },
+    {
+      "symbol": "WLDUSDT",
+      "entry_price": 0.5247,
+      "amount": 381.17019249094716,
+      "invested_usdt": 200.0,
+      "target_price": 0.5278482000000001,
+      "stop_loss_price": 0.5115825,
+      "entry_rsi": 23.62,
+      "entry_time": "2026-10-12 14:18:46 UTC",
+      "exit_price": 0.5278482000000001,
+      "exit_time": "2026-10-12 20:34:06 UTC",
+      "result": "TP",
+      "pnl_pct": 0.6,
+      "pnl_usdt": 1.2
+    }
+  ],
+  "stats": {
+    "total_trades": 3,
+    "wins": 1,
+    "losses": 2,
+    "total_profit_usdt": -9.197636537847348
+  }
+}
