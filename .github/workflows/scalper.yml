@@ -9,6 +9,10 @@ on:
 permissions:
   contents: write
 
+concurrency:
+  group: mexc-scalper
+  cancel-in-progress: false
+
 jobs:
   scalp-scan:
     runs-on: ubuntu-latest

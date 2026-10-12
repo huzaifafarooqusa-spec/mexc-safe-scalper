@@ -9,9 +9,13 @@ import urllib.request
 import urllib.error
 from datetime import datetime, timezone
 
+KLINE_MS = 5 * 60 * 1000
+
 # --- CONFIGURATION ---
-BOT_TOKEN = os.getenv("BOT_TOKEN", "8995329698:AAH8t_4777maZKsC50TTaHIdEFimh5V8cmM")
-CHAT_ID = os.getenv("CHAT_ID", "714192775")
+BOT_TOKEN = os.getenv("BOT_TOKEN")
+CHAT_ID = os.getenv("CHAT_ID")
+if not BOT_TOKEN or not CHAT_ID:
+    sys.exit("BOT_TOKEN and CHAT_ID environment variables are required")
 
 MEXC_BASE_URL = "https://api.mexc.com/api/v3"
 STATE_FILE = os.path.join(os.path.dirname(__file__), "state.json")
@@ -35,7 +39,7 @@ MAX_CONCURRENT_TRADES = 3   # Max 3 coins at a time
 DEFAULT_SLOT_SIZE = 200.0   # $200 per trade slot
 
 # SSL Context for requests
-ssl_ctx = ssl._create_unverified_context()
+ssl_ctx = ssl.create_default_context()
 HEADERS = {"User-Agent": "Mozilla/5.0 MEXCScalperBot/1.0"}
 
 def fetch_json(url):
@@ -105,16 +109,15 @@ def calculate_bollinger_bands(closes, period=20, std_dev_mult=2.0):
     return upper, sma, lower
 
 def calculate_rsi(closes, period=14):
+    """Wilder's RSI (smoothed), matches TradingView."""
     if len(closes) < period + 1:
         return None
     deltas = [closes[i] - closes[i - 1] for i in range(1, len(closes))]
-    recent_deltas = deltas[-period:]
-    gains = [d for d in recent_deltas if d > 0]
-    losses = [abs(d) for d in recent_deltas if d < 0]
-
-    avg_gain = sum(gains) / period if gains else 0.0
-    avg_loss = sum(losses) / period if losses else 0.0
-
+    avg_gain = sum(d for d in deltas[:period] if d > 0) / period
+    avg_loss = sum(-d for d in deltas[:period] if d < 0) / period
+    for d in deltas[period:]:
+        avg_gain = (avg_gain * (period - 1) + max(d, 0.0)) / period
+        avg_loss = (avg_loss * (period - 1) + max(-d, 0.0)) / period
     if avg_loss == 0.0:
         return 100.0
     rs = avg_gain / avg_loss
@@ -138,14 +141,9 @@ def process_trades(state):
 
     # 1. CHECK OPEN POSITIONS (TAKE PROFIT / STOP LOSS)
     for symbol, trade in list(open_trades.items()):
-        klines = get_klines_data(symbol, interval="5m", limit=5)
+        klines = get_klines_data(symbol, interval="5m", limit=200)
         if not klines:
             continue
-
-        latest_kline = klines[-1]
-        high_price = float(latest_kline[2])
-        low_price = float(latest_kline[3])
-        current_price = float(latest_kline[4])
 
         entry_price = trade["entry_price"]
         target_price = trade["target_price"]
@@ -153,55 +151,69 @@ def process_trades(state):
         amount = trade["amount"]
         invested = trade["invested_usdt"]
 
-        # Check if candle High reached Take Profit (+0.60% or higher)
-        if high_price >= target_price:
-            exit_price = max(current_price, target_price)
+        entry_ms = trade.get("entry_ts")
+        if entry_ms is None:
+            entry_ms = int(datetime.strptime(trade["entry_time"], "%Y-%m-%d %H:%M:%S UTC")
+                           .replace(tzinfo=timezone.utc).timestamp() * 1000)
+
+        # Walk every candle since entry (not just the latest) so no TP/SL touch is missed.
+        # The entry candle is skipped: its high/low may predate the entry.
+        # If one candle touches both levels, assume the stop hit first (conservative).
+        outcome = None
+        for k in klines:
+            if int(k[0]) + KLINE_MS <= entry_ms or int(k[0]) <= entry_ms - (entry_ms % KLINE_MS):
+                continue
+            high_price, low_price = float(k[2]), float(k[3])
+            if low_price <= stop_price:
+                outcome = ("SL", stop_price)
+                break
+            if high_price >= target_price:
+                outcome = ("TP", target_price)
+                break
+
+        if outcome:
+            kind, exit_price = outcome
             pnl_pct = ((exit_price - entry_price) / entry_price) * 100
             pnl_usdt = (exit_price - entry_price) * amount
 
             state["virtual_balance"] += (invested + pnl_usdt)
             state["stats"]["total_trades"] += 1
-            state["stats"]["wins"] += 1
             state["stats"]["total_profit_usdt"] += pnl_usdt
+            state["stats"]["wins" if kind == "TP" else "losses"] += 1
+            state.setdefault("closed_trades", []).append({
+                **trade,
+                "exit_price": exit_price,
+                "exit_time": now_str,
+                "result": kind,
+                "pnl_pct": round(pnl_pct, 4),
+                "pnl_usdt": round(pnl_usdt, 4),
+            })
+            state["closed_trades"] = state["closed_trades"][-200:]
 
             win_rate = (state["stats"]["wins"] / state["stats"]["total_trades"]) * 100
-
-            msg = (
-                f"🎯 <b>PROFIT TAKEN! ({html.escape(symbol)})</b>\n\n"
-                f"🟢 <b>Entry Price:</b> <code>${entry_price:.5f}</code>\n"
-                f"🔴 <b>Exit Price:</b> <code>${exit_price:.5f}</code>\n"
-                f"💰 <b>Net Profit:</b> <code>+{pnl_pct:.2f}%</code> (+${pnl_usdt:.2f} USDT)\n"
+            stats_lines = (
                 f"🏦 <b>New Virtual Balance:</b> <code>${state['virtual_balance']:.2f} USDT</code>\n"
                 f"🏆 <b>Overall Win Rate:</b> <code>{win_rate:.1f}%</code> ({state['stats']['wins']}/{state['stats']['total_trades']})\n"
                 f"⏱️ <i>{now_str}</i>"
             )
-            print(f"✅ TP HIT: {symbol} at {exit_price}")
-            send_telegram(msg)
-            closed_this_round.append(symbol)
-
-        # Check if candle Low breached Stop Loss (-2.50%)
-        elif low_price <= stop_price:
-            exit_price = min(current_price, stop_price)
-            pnl_pct = ((exit_price - entry_price) / entry_price) * 100
-            pnl_usdt = (exit_price - entry_price) * amount
-
-            state["virtual_balance"] += (invested + pnl_usdt)
-            state["stats"]["total_trades"] += 1
-            state["stats"]["losses"] += 1
-            state["stats"]["total_profit_usdt"] += pnl_usdt
-
-            win_rate = (state["stats"]["wins"] / state["stats"]["total_trades"]) * 100
-
-            msg = (
-                f"🛑 <b>STOP LOSS EXECUTED ({html.escape(symbol)})</b>\n\n"
-                f"🟢 <b>Entry Price:</b> <code>${entry_price:.5f}</code>\n"
-                f"🔴 <b>Exit Price:</b> <code>${exit_price:.5f}</code>\n"
-                f"📉 <b>Loss:</b> <code>{pnl_pct:.2f}%</code> (-${abs(pnl_usdt):.2f} USDT)\n"
-                f"🏦 <b>New Virtual Balance:</b> <code>${state['virtual_balance']:.2f} USDT</code>\n"
-                f"🏆 <b>Overall Win Rate:</b> <code>{win_rate:.1f}%</code> ({state['stats']['wins']}/{state['stats']['total_trades']})\n"
-                f"⏱️ <i>{now_str}</i>"
-            )
-            print(f"⚠️ SL HIT: {symbol} at {exit_price}")
+            if kind == "TP":
+                msg = (
+                    f"🎯 <b>PROFIT TAKEN! ({html.escape(symbol)})</b>\n\n"
+                    f"🟢 <b>Entry Price:</b> <code>${entry_price:.5f}</code>\n"
+                    f"🔴 <b>Exit Price:</b> <code>${exit_price:.5f}</code>\n"
+                    f"💰 <b>Net Profit:</b> <code>+{pnl_pct:.2f}%</code> (+${pnl_usdt:.2f} USDT)\n"
+                    + stats_lines
+                )
+                print(f"✅ TP HIT: {symbol} at {exit_price}")
+            else:
+                msg = (
+                    f"🛑 <b>STOP LOSS EXECUTED ({html.escape(symbol)})</b>\n\n"
+                    f"🟢 <b>Entry Price:</b> <code>${entry_price:.5f}</code>\n"
+                    f"🔴 <b>Exit Price:</b> <code>${exit_price:.5f}</code>\n"
+                    f"📉 <b>Loss:</b> <code>{pnl_pct:.2f}%</code> (-${abs(pnl_usdt):.2f} USDT)\n"
+                    + stats_lines
+                )
+                print(f"⚠️ SL HIT: {symbol} at {exit_price}")
             send_telegram(msg)
             closed_this_round.append(symbol)
 
@@ -249,7 +261,8 @@ def process_trades(state):
                     "target_price": target_price,
                     "stop_loss_price": stop_loss_price,
                     "entry_rsi": round(rsi, 2),
-                    "entry_time": now_str
+                    "entry_time": now_str,
+                    "entry_ts": int(datetime.now(timezone.utc).timestamp() * 1000)
                 }
                 state["virtual_balance"] -= slot_size
                 available_slots -= 1
