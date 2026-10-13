@@ -1,7 +1,8 @@
 {
-  "virtual_balance": 800.0,
-  "open_trades": {
-    "TIAUSDT": {
+  "virtual_balance": 1002.8985,
+  "open_trades": {},
+  "closed_trades": [
+    {
       "symbol": "TIAUSDT",
       "entry_price": 0.5960979,
       "amount": 335.347599781848,
@@ -11,22 +12,27 @@
       "stop_loss_price": 0.584175942,
       "entry_rsi": 29.7,
       "entry_ts": 1791889500000,
-      "entry_time": "2026-10-13 11:05:00 UTC"
+      "entry_time": "2026-10-13 11:05:00 UTC",
+      "exit_price": 0.6050393685,
+      "exit_ts": 1791890700000,
+      "exit_time": "2026-10-13 11:25:00 UTC",
+      "result": "TP",
+      "pnl_usdt": 2.8985,
+      "pnl_pct": 1.4493
     }
-  },
-  "closed_trades": [],
+  ],
   "cooldowns": {},
   "day": {
     "date": "2026-10-13",
     "start_equity": 1000.0,
-    "pnl": 0.0
+    "pnl": 2.8985000000000127
   },
   "stats": {
-    "total_trades": 0,
-    "wins": 0,
+    "total_trades": 1,
+    "wins": 1,
     "losses": 0,
-    "total_profit_usdt": 0.0,
-    "fees_usdt": 0.0
+    "total_profit_usdt": 2.8985000000000127,
+    "fees_usdt": 0.1
   },
   "last_report_date": "2026-10-13"
 }
