@@ -4,7 +4,7 @@
   "closed_trades": [],
   "cooldowns": {},
   "day": {
-    "date": null,
+    "date": "2026-10-13",
     "start_equity": 1000.0,
     "pnl": 0.0
   },
@@ -14,5 +14,6 @@
     "losses": 0,
     "total_profit_usdt": 0.0,
     "fees_usdt": 0.0
-  }
+  },
+  "last_report_date": "2026-10-13"
 }
