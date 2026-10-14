@@ -23,9 +23,9 @@
   ],
   "cooldowns": {},
   "day": {
-    "date": "2026-10-13",
-    "start_equity": 1000.0,
-    "pnl": 2.8985000000000127
+    "date": "2026-10-14",
+    "start_equity": 1002.8985,
+    "pnl": 0.0
   },
   "stats": {
     "total_trades": 1,
@@ -34,5 +34,5 @@
     "total_profit_usdt": 2.8985000000000127,
     "fees_usdt": 0.1
   },
-  "last_report_date": "2026-10-13"
+  "last_report_date": "2026-10-14"
 }
