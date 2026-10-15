@@ -1,5 +1,5 @@
 {
-  "virtual_balance": 802.8985,
+  "virtual_balance": 602.8985,
   "open_trades": {
     "RENDERUSDT": {
       "symbol": "RENDERUSDT",
@@ -12,6 +12,18 @@
       "entry_rsi": 31.44,
       "entry_ts": 1792097700000,
       "entry_time": "2026-10-15 20:55:00 UTC"
+    },
+    "SOLUSDT": {
+      "symbol": "SOLUSDT",
+      "entry_price": 105.442695,
+      "amount": 1.8958164906539994,
+      "invested_usdt": 200.0,
+      "entry_fee_usdt": 0.1,
+      "target_price": 107.02433542499999,
+      "stop_loss_price": 103.3338411,
+      "entry_rsi": 31.35,
+      "entry_ts": 1792106100000,
+      "entry_time": "2026-10-15 23:15:00 UTC"
     }
   },
   "closed_trades": [
