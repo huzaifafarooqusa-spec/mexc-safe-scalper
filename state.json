@@ -1,19 +1,6 @@
 {
-  "virtual_balance": 798.6046469755,
-  "open_trades": {
-    "SOLUSDT": {
-      "symbol": "SOLUSDT",
-      "entry_price": 105.442695,
-      "amount": 1.8958164906539994,
-      "invested_usdt": 200.0,
-      "entry_fee_usdt": 0.1,
-      "target_price": 107.02433542499999,
-      "stop_loss_price": 103.3338411,
-      "entry_rsi": 31.35,
-      "entry_ts": 1792106100000,
-      "entry_time": "2026-10-15 23:15:00 UTC"
-    }
-  },
+  "virtual_balance": 1001.5031469755,
+  "open_trades": {},
   "closed_trades": [
     {
       "symbol": "TIAUSDT",
@@ -50,6 +37,24 @@
       "result": "SL",
       "pnl_usdt": -4.2939,
       "pnl_pct": -2.1469
+    },
+    {
+      "symbol": "SOLUSDT",
+      "entry_price": 105.442695,
+      "amount": 1.8958164906539994,
+      "invested_usdt": 200.0,
+      "entry_fee_usdt": 0.1,
+      "target_price": 107.02433542499999,
+      "stop_loss_price": 103.3338411,
+      "entry_rsi": 31.35,
+      "entry_ts": 1792106100000,
+      "entry_time": "2026-10-15 23:15:00 UTC",
+      "exit_price": 107.02433542499999,
+      "exit_ts": 1792149300000,
+      "exit_time": "2026-10-16 11:15:00 UTC",
+      "result": "TP",
+      "pnl_usdt": 2.8985,
+      "pnl_pct": 1.4492
     }
   ],
   "cooldowns": {
@@ -58,14 +63,14 @@
   "day": {
     "date": "2026-10-16",
     "start_equity": 1002.8985,
-    "pnl": -4.2938530245000095
+    "pnl": -1.3953530245000252
   },
   "stats": {
-    "total_trades": 2,
-    "wins": 1,
+    "total_trades": 3,
+    "wins": 2,
     "losses": 1,
-    "total_profit_usdt": -1.3953530244999968,
-    "fees_usdt": 0.29790202450000003
+    "total_profit_usdt": 1.5031469754999875,
+    "fees_usdt": 0.3979020245
   },
   "last_report_date": "2026-10-16"
 }
