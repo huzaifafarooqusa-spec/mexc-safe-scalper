@@ -79,9 +79,9 @@
     "RENDERUSDT": 1792129200000
   },
   "day": {
-    "date": "2026-10-16",
-    "start_equity": 1002.8985,
-    "pnl": 1.5031469754999591
+    "date": "2026-10-17",
+    "start_equity": 1004.4016469755001,
+    "pnl": 0.0
   },
   "stats": {
     "total_trades": 4,
@@ -90,5 +90,5 @@
     "total_profit_usdt": 4.401646975499972,
     "fees_usdt": 0.4979020245
   },
-  "last_report_date": "2026-10-16"
+  "last_report_date": "2026-10-17"
 }
