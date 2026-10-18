@@ -117,9 +117,9 @@
     "WLDUSDT": 1792245900000
   },
   "day": {
-    "date": "2026-10-17",
-    "start_equity": 1004.4016469755001,
-    "pnl": -8.587706049000019
+    "date": "2026-10-18",
+    "start_equity": 995.8139409265001,
+    "pnl": 0.0
   },
   "stats": {
     "total_trades": 6,
@@ -128,5 +128,5 @@
     "total_profit_usdt": -4.186059073500047,
     "fees_usdt": 0.8937060735
   },
-  "last_report_date": "2026-10-17"
+  "last_report_date": "2026-10-18"
 }
