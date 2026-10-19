@@ -1,6 +1,19 @@
 {
-  "virtual_balance": 995.8139409265001,
-  "open_trades": {},
+  "virtual_balance": 795.8139409265001,
+  "open_trades": {
+    "DOTUSDT": {
+      "symbol": "DOTUSDT",
+      "entry_price": 1.11485715,
+      "amount": 179.3054832181863,
+      "invested_usdt": 200.0,
+      "entry_fee_usdt": 0.1,
+      "target_price": 1.13158000725,
+      "stop_loss_price": 1.0925600069999999,
+      "entry_rsi": 30.14,
+      "entry_ts": 1792404000000,
+      "entry_time": "2026-10-19 10:00:00 UTC"
+    }
+  },
   "closed_trades": [
     {
       "symbol": "TIAUSDT",
