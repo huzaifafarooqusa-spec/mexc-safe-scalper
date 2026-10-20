@@ -1,6 +1,19 @@
 {
-  "virtual_balance": 998.4456299021658,
-  "open_trades": {},
+  "virtual_balance": 798.4456299021658,
+  "open_trades": {
+    "SOLUSDT": {
+      "symbol": "SOLUSDT",
+      "entry_price": 105.4527,
+      "amount": 1.8956366219167458,
+      "invested_usdt": 200.0,
+      "entry_fee_usdt": 0.1,
+      "target_price": 107.03449049999998,
+      "stop_loss_price": 103.34364599999999,
+      "entry_rsi": 30.71,
+      "entry_ts": 1792524300000,
+      "entry_time": "2026-10-20 19:25:00 UTC"
+    }
+  },
   "closed_trades": [
     {
       "symbol": "TIAUSDT",
