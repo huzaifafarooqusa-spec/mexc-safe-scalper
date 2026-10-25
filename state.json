@@ -1,19 +1,6 @@
 {
-  "virtual_balance": 797.0502768776659,
-  "open_trades": {
-    "DOGEUSDT": {
-      "symbol": "DOGEUSDT",
-      "entry_price": 0.077608785,
-      "amount": 2575.739331571806,
-      "invested_usdt": 200.0,
-      "entry_fee_usdt": 0.1,
-      "target_price": 0.078772916775,
-      "stop_loss_price": 0.0760566093,
-      "entry_rsi": 27.65,
-      "entry_ts": 1792906200000,
-      "entry_time": "2026-10-25 05:30:00 UTC"
-    }
-  },
+  "virtual_balance": 992.7564238531659,
+  "open_trades": {},
   "closed_trades": [
     {
       "symbol": "TIAUSDT",
@@ -194,25 +181,44 @@
       "result": "SL",
       "pnl_usdt": -4.2939,
       "pnl_pct": -2.1469
+    },
+    {
+      "symbol": "DOGEUSDT",
+      "entry_price": 0.077608785,
+      "amount": 2575.739331571806,
+      "invested_usdt": 200.0,
+      "entry_fee_usdt": 0.1,
+      "target_price": 0.078772916775,
+      "stop_loss_price": 0.0760566093,
+      "entry_rsi": 27.65,
+      "entry_ts": 1792906200000,
+      "entry_time": "2026-10-25 05:30:00 UTC",
+      "exit_price": 0.07601858099535,
+      "exit_ts": 1792920000000,
+      "exit_time": "2026-10-25 09:20:00 UTC",
+      "result": "SL",
+      "pnl_usdt": -4.2939,
+      "pnl_pct": -2.1469
     }
   ],
   "cooldowns": {
     "RENDERUSDT": 1792129200000,
     "TIAUSDT": 1792238700000,
     "WLDUSDT": 1792245900000,
-    "SOLUSDT": 1792642800000
+    "SOLUSDT": 1792642800000,
+    "DOGEUSDT": 1792927200000
   },
   "day": {
     "date": "2026-10-25",
     "start_equity": 997.0502768776659,
-    "pnl": 0.0
+    "pnl": -4.2938530245000095
   },
   "stats": {
-    "total_trades": 10,
+    "total_trades": 11,
     "wins": 5,
-    "losses": 5,
-    "total_profit_usdt": -2.949723122334376,
-    "fees_usdt": 1.491524650764215
+    "losses": 6,
+    "total_profit_usdt": -7.2435761468343856,
+    "fees_usdt": 1.689426675264215
   },
   "last_report_date": "2026-10-25"
 }
