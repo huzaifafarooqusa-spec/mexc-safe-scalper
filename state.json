@@ -209,9 +209,9 @@
     "DOGEUSDT": 1792927200000
   },
   "day": {
-    "date": "2026-10-25",
-    "start_equity": 997.0502768776659,
-    "pnl": -4.2938530245000095
+    "date": "2026-10-26",
+    "start_equity": 992.7564238531659,
+    "pnl": 0.0
   },
   "stats": {
     "total_trades": 11,
@@ -220,5 +220,5 @@
     "total_profit_usdt": -7.2435761468343856,
     "fees_usdt": 1.689426675264215
   },
-  "last_report_date": "2026-10-25"
+  "last_report_date": "2026-10-26"
 }
