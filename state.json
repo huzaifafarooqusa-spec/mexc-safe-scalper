@@ -1,19 +1,6 @@
 {
-  "virtual_balance": 794.2595708286658,
-  "open_trades": {
-    "DOTUSDT": {
-      "symbol": "DOTUSDT",
-      "entry_price": 0.96718335,
-      "amount": 206.68263158169546,
-      "invested_usdt": 200.0,
-      "entry_fee_usdt": 0.1,
-      "target_price": 0.98169110025,
-      "stop_loss_price": 0.947839683,
-      "entry_rsi": 30.78,
-      "entry_ts": 1793410500000,
-      "entry_time": "2026-10-31 01:35:00 UTC"
-    }
-  },
+  "virtual_balance": 991.6093322219994,
+  "open_trades": {},
   "closed_trades": [
     {
       "symbol": "TIAUSDT",
@@ -266,6 +253,24 @@
       "result": "TP",
       "pnl_usdt": 2.8985,
       "pnl_pct": 1.4492
+    },
+    {
+      "symbol": "DOTUSDT",
+      "entry_price": 0.96718335,
+      "amount": 206.68263158169546,
+      "invested_usdt": 200.0,
+      "entry_fee_usdt": 0.1,
+      "target_price": 0.98169110025,
+      "stop_loss_price": 0.947839683,
+      "entry_rsi": 30.78,
+      "entry_ts": 1793410500000,
+      "entry_time": "2026-10-31 01:35:00 UTC",
+      "exit_price": 0.9553221000000001,
+      "exit_ts": 1793454000000,
+      "exit_time": "2026-10-31 13:40:00 UTC",
+      "result": "TIME",
+      "pnl_usdt": -2.6502,
+      "pnl_pct": -1.3251
     }
   ],
   "cooldowns": {
@@ -279,14 +284,14 @@
   "day": {
     "date": "2026-10-31",
     "start_equity": 994.2595708286658,
-    "pnl": 0.0
+    "pnl": -2.65023860666642
   },
   "stats": {
-    "total_trades": 14,
+    "total_trades": 15,
     "wins": 7,
-    "losses": 7,
-    "total_profit_usdt": -5.740429171334426,
-    "fees_usdt": 2.0873286997642153
+    "losses": 8,
+    "total_profit_usdt": -8.390667778000847,
+    "fees_usdt": 2.286052942582291
   },
   "last_report_date": "2026-10-31"
 }
