@@ -300,9 +300,9 @@
     "DOTUSDT": 1793213700000
   },
   "day": {
-    "date": "2026-11-01",
-    "start_equity": 991.6093322219994,
-    "pnl": 0.34978790948710525
+    "date": "2026-11-02",
+    "start_equity": 991.9591201314864,
+    "pnl": 0.0
   },
   "stats": {
     "total_trades": 16,
@@ -311,5 +311,5 @@
     "total_profit_usdt": -8.040879868513741,
     "fees_usdt": 2.4862779490402636
   },
-  "last_report_date": "2026-11-01"
+  "last_report_date": "2026-11-02"
 }
