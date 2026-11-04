@@ -1,31 +1,6 @@
 {
-  "virtual_balance": 591.9591201314864,
-  "open_trades": {
-    "WLDUSDT": {
-      "symbol": "WLDUSDT",
-      "entry_price": 0.38429205,
-      "amount": 520.1772974486462,
-      "invested_usdt": 200.0,
-      "entry_fee_usdt": 0.1,
-      "target_price": 0.39005643074999996,
-      "stop_loss_price": 0.37660620899999997,
-      "entry_rsi": 28.15,
-      "entry_ts": 1793794200000,
-      "entry_time": "2026-11-04 12:10:00 UTC"
-    },
-    "FETUSDT": {
-      "symbol": "FETUSDT",
-      "entry_price": 0.1582791,
-      "amount": 1262.9589124527497,
-      "invested_usdt": 200.0,
-      "entry_fee_usdt": 0.1,
-      "target_price": 0.1606532865,
-      "stop_loss_price": 0.155113518,
-      "entry_rsi": 31.59,
-      "entry_ts": 1793795400000,
-      "entry_time": "2026-11-04 12:30:00 UTC"
-    }
-  },
+  "virtual_balance": 997.7561201314865,
+  "open_trades": {},
   "closed_trades": [
     {
       "symbol": "TIAUSDT",
@@ -314,6 +289,42 @@
       "result": "TIME",
       "pnl_usdt": 0.3498,
       "pnl_pct": 0.1749
+    },
+    {
+      "symbol": "WLDUSDT",
+      "entry_price": 0.38429205,
+      "amount": 520.1772974486462,
+      "invested_usdt": 200.0,
+      "entry_fee_usdt": 0.1,
+      "target_price": 0.39005643074999996,
+      "stop_loss_price": 0.37660620899999997,
+      "entry_rsi": 28.15,
+      "entry_ts": 1793794200000,
+      "entry_time": "2026-11-04 12:10:00 UTC",
+      "exit_price": 0.39005643074999996,
+      "exit_ts": 1793803500000,
+      "exit_time": "2026-11-04 14:45:00 UTC",
+      "result": "TP",
+      "pnl_usdt": 2.8985,
+      "pnl_pct": 1.4492
+    },
+    {
+      "symbol": "FETUSDT",
+      "entry_price": 0.1582791,
+      "amount": 1262.9589124527497,
+      "invested_usdt": 200.0,
+      "entry_fee_usdt": 0.1,
+      "target_price": 0.1606532865,
+      "stop_loss_price": 0.155113518,
+      "entry_rsi": 31.59,
+      "entry_ts": 1793795400000,
+      "entry_time": "2026-11-04 12:30:00 UTC",
+      "exit_price": 0.1606532865,
+      "exit_ts": 1793803500000,
+      "exit_time": "2026-11-04 14:45:00 UTC",
+      "result": "TP",
+      "pnl_usdt": 2.8985,
+      "pnl_pct": 1.4493
     }
   ],
   "cooldowns": {
@@ -327,14 +338,14 @@
   "day": {
     "date": "2026-11-04",
     "start_equity": 991.9591201314864,
-    "pnl": 0.0
+    "pnl": 5.796999999999997
   },
   "stats": {
-    "total_trades": 16,
-    "wins": 8,
+    "total_trades": 18,
+    "wins": 10,
     "losses": 8,
-    "total_profit_usdt": -8.040879868513741,
-    "fees_usdt": 2.4862779490402636
+    "total_profit_usdt": -2.243879868513744,
+    "fees_usdt": 2.6862779490402637
   },
   "last_report_date": "2026-11-04"
 }
