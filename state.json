@@ -1,6 +1,19 @@
 {
-  "virtual_balance": 1000.6546201314865,
-  "open_trades": {},
+  "virtual_balance": 800.6546201314865,
+  "open_trades": {
+    "RENDERUSDT": {
+      "symbol": "RENDERUSDT",
+      "entry_price": 1.552776,
+      "amount": 128.73717780285116,
+      "invested_usdt": 200.0,
+      "entry_fee_usdt": 0.1,
+      "target_price": 1.5760676399999998,
+      "stop_loss_price": 1.52172048,
+      "entry_rsi": 30.2,
+      "entry_ts": 1793974200000,
+      "entry_time": "2026-11-06 14:10:00 UTC"
+    }
+  },
   "closed_trades": [
     {
       "symbol": "TIAUSDT",
